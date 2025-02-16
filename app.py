@@ -12,6 +12,13 @@ REQUEST_DURATION = Histogram('weather_api_response_duration_seconds', 'Χρον�
 
 CORS(app)   #access σε όλους τους clients
 
+@app.route("/", methods=["GET"])
+def home():
+    REQUEST_COUNT.inc()
+    with REQUEST_DURATION.time():
+        return "Welcome to the Weather Monitoring API "
+
+
 @app.route("/weather", methods = ["GET"])
 def weather():
     REQUEST_COUNT.inc()
@@ -77,7 +84,9 @@ def weather():
 
 @app.route("/metrics", methods = ["GET"])
 def metrics():
-    return generate_latest(),200,{'Content-Type':CONTENT_TYPE_LATEST}
+    REQUEST_COUNT.inc()
+    with REQUEST_DURATION.time():
+        return generate_latest(),200,{'Content-Type':CONTENT_TYPE_LATEST}
 
 
 if __name__ == "__main__" :
