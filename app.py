@@ -16,7 +16,19 @@ CORS(app)   #access σε όλους τους clients
 def home():
     REQUEST_COUNT.inc()
     with REQUEST_DURATION.time():
-        return "Welcome to the Weather Monitoring API "
+        return """
+            <pre>
+            ----------------------------------------------
+             Welcome to the Weather Monitoring API 
+            ----------------------------------------------
+            Available Endpoints:
+                 /weather  - Get real-time weather data
+                 /metrics  - View Prometheus metrics
+      
+             Built with Flask, Prometheus, and Azure
+            ----------------------------------------------
+            </pre>
+            """
 
 
 @app.route("/weather", methods = ["GET"])
