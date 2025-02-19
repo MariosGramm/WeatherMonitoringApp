@@ -95,14 +95,7 @@ def weather():
             "weather"    :data["current"]["weather"][0]["description"],
             "min_temp"   :data["daily"][0]["temp"]["min"],
             "max_temp"   :data["daily"][0]["temp"]["max"],
-            "alerts"     :[
-                {
-                "event"      :data["alerts"][0]["event"],
-                "description":data["alerts"][0]["description"],
-                "start time" :human_readable_start,
-                "end time"   :human_readable_end
-                }
-            ]
+            "alerts"     :alerts_data
 
         })
 
