@@ -63,11 +63,24 @@ def weather():
         data = response.json()
 
         #Μετατροπή Unix time σε κανονική ώρα
-        unix_time_start = data["alerts"][0]["start"]
-        unix_time_end = data["alerts"][0]["end"]
+        if "alerts" in data and len(data["alerts"]) > 0:
+            unix_time_start = data["alerts"][0]["start"]
+            unix_time_end = data["alerts"][0]["end"]
 
-        human_readable_start = datetime.fromtimestamp(unix_time_start, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
-        human_readable_end = datetime.fromtimestamp(unix_time_end, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+            human_readable_start = datetime.fromtimestamp(unix_time_start, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+            human_readable_end = datetime.fromtimestamp(unix_time_end, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+
+            alerts_data = [
+                {
+            "event"      : data["alerts"][0]["event"],
+            "description": data["alerts"][0]["description"],
+            "start time" : human_readable_start,
+            "end time"   : human_readable_end
+                }
+            ]
+        else:
+            alerts_data = []  # Αν δεν υπάρχουν alerts, στέλνει κενή λίστα
+
 
     
 
