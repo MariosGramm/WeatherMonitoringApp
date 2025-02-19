@@ -3,7 +3,6 @@ from flask_cors import CORS
 import requests
 from datetime import datetime,timezone
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
-import logging
 
 
 app = Flask(__name__)
@@ -31,7 +30,6 @@ def home():
             </pre>
             """
 
-logging.basicConfig(level=logging.DEBUG)
 
 @app.route("/weather", methods = ["GET"])
 def weather():
@@ -48,15 +46,11 @@ def weather():
 
         data = response.json()
 
-        logging.debug(f"IP Response: {data}")
-
         if response.status_code == 200 :
             loc = data["city"],data["country"]
             lat = data["lat"]
             lon = data["lon"]
-            logging.debug(f"Τοποθεσία: {loc}, Lat: {lat}, Lon: {lon}")
         else:
-            logging.error("Σφάλμα στη λήψη δεδομένων τοποθεσίας")
             return{"error : Failed to retrieve location data"}
 
         #Αίτημα στο OpenWeatherAPI
@@ -67,8 +61,6 @@ def weather():
         response = requests.get(url)
 
         data = response.json()
-
-        logging.debug(f"OpenWeather Response: {data}")
 
         #Μετατροπή Unix time σε κανονική ώρα
         if "alerts" in data and len(data["alerts"]) > 0:
