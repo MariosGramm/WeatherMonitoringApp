@@ -42,6 +42,11 @@ def weather():
         try:
             # Ανίχνευση latitude και longtitude χρήστη
             user_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+            if "," in user_ip:  # Αν υπάρχει πολλαπλή IP 
+                user_ip = user_ip.split(",")[0]
+            if ":" in user_ip:  # Αν υπάρχει PORT 
+                user_ip = user_ip.split(":")[0]
+
             logging.debug(f"User IP: {user_ip}")
 
             if user_ip == "127.0.0.1" or user_ip == "192.168.1.114":
