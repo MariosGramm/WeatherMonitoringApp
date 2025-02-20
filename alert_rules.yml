@@ -1,0 +1,20 @@
+groups:
+  - name: WeatherAlerts
+    rules:
+      - alert: HighResponseTime
+        expr: http_server_requests_seconds_sum / http_server_requests_seconds_count > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Υψηλός χρόνος απόκρισης API"
+          description: "Ο χρόνος απόκρισης του Flask API ξεπερνά τα 2 δευτερόλεπτα για πάνω από 1 λεπτό."
+
+      - alert: LowTemperature
+        expr: weather_temperature < 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Πολύ χαμηλή θερμοκρασία"
+          description: "Η θερμοκρασία είναι κάτω από 0°C για πάνω από 2 λεπτά."
