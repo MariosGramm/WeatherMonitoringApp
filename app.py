@@ -31,6 +31,7 @@ def home():
             """
 
 
+
 @app.route("/weather", methods = ["GET"])
 def weather():
     REQUEST_COUNT.inc()
@@ -40,7 +41,7 @@ def weather():
         if user_ip == "127.0.0.1" or user_ip == "192.168.1.114":
             user_ip = "8.8.8.8"  # Google DNS , για δοκιμές στον localhost
 
-        url = f'https://ip-api.com/json/{user_ip}'
+        url = f'https://ip-api.com/json/{user_ip}'  #secure protocol
 
         response = requests.get(url)
 
