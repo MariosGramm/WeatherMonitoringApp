@@ -1,0 +1,45 @@
+
+
+services:   #κάθε εργασία είναι χωρισμένη σε services
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml   #σύνδεση τοπικού αρχείου promitheus.yml
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml  #σύνδεση τοπικού αρχείου alert_rules.yml
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"   #αρχείο διαμόρφωσης(configuration file) prometheus.yml
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml #σύνδεση τοπικού αρχείου alertmanager.yml
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Mariosgr12
+    networks:
+      - monitoring
+    volumes:
+      - grafana-data:/var/lib/grafana   #grafana data :docker volume που αποθηκεύονται τα dashboards και οι ρυθμίσεις του Grafana (χρήση του volume)
+
+volumes:
+  grafana-data:   #ορισμός του volume -- χωρίς αυτό το volume θα έτρεχε ανώνυμα(με όνομα που θα είχει ορίσει αυτόματα το docker)
+
+networks:
+  monitoring:
+    driver: bridge    #σύνδεση των containers μεταξύ τους
