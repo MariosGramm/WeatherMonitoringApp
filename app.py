@@ -40,8 +40,8 @@ def weather():
     REQUEST_COUNT.inc()
     with REQUEST_DURATION.time():
         try:
-            #Ανίχνευση latitude και longtitude χρήστη
-            user_ip = request.headers.get("X-Forwarded-For",request.remote_addr)
+            # Ανίχνευση latitude και longtitude χρήστη
+            user_ip = request.headers.get("X-Forwarded-For", request.remote_addr)
             logging.debug(f"User IP: {user_ip}")
 
             if user_ip == "127.0.0.1" or user_ip == "192.168.1.114":
@@ -50,70 +50,75 @@ def weather():
             url = f'http://ip-api.com/json/{user_ip}'  
             logging.debug(f"IP-API URL: {url}")
 
-            response = requests.get(url)
-
-            data = response.json()
-            logging.debug(f"IP-API Response: {data}")
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+                logging.debug(f"IP-API Response: {data}")
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Σφάλμα στο IP-API Request: {str(e)}")
+                return jsonify({"error": "Failed to retrieve location data"}), 500
 
             if response.status_code == 200 :
-                loc = data["city"],data["country"]
-                lat = data["lat"]
-                lon = data["lon"]
+                loc = (data.get("city", "Unknown"), data.get("country", "Unknown"))
+                lat = data.get("lat", 0)
+                lon = data.get("lon", 0)
                 logging.debug(f"Location: {loc}, Lat: {lat}, Lon: {lon}")
             else:
                 logging.error("Σφάλμα στη λήψη δεδομένων τοποθεσίας")
-                return{"error : Failed to retrieve location data"}
+                return jsonify({"error" : "Failed to retrieve location data"})
 
-            #Αίτημα στο OpenWeatherAPI
+            # Αίτημα στο OpenWeatherAPI
             api_key = "d3867d125924f8f826fa707057778f18"
             url = f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&units=metric&exclude=minutely,hourly&appid={api_key}'
             logging.debug(f"OpenWeather URL: {url}")
-        
 
-            response = requests.get(url)
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+                logging.debug(f"OpenWeather Response: {data}")
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Σφάλμα στο OpenWeather Request: {str(e)}")
+                return jsonify({"error": "Failed to retrieve weather data"}), 500
 
-            data = response.json()
-            logging.debug(f"OpenWeather Response: {data}")
-
-            #Μετατροπή Unix time σε κανονική ώρα
-            if "alerts" in data and len(data["alerts"]) > 0:
-                unix_time_start = data["alerts"][0]["start"]
-                unix_time_end = data["alerts"][0]["end"]
+            # Μετατροπή Unix time σε κανονική ώρα
+            if data.get("alerts"):
+                unix_time_start = data["alerts"][0].get("start")
+                unix_time_end = data["alerts"][0].get("end")
 
                 human_readable_start = datetime.fromtimestamp(unix_time_start, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
                 human_readable_end = datetime.fromtimestamp(unix_time_end, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
 
                 alerts_data = [
                     {
-                "event"      : data["alerts"][0]["event"],
-                "description": data["alerts"][0]["description"],
-                "start time" : human_readable_start,
-                "end time"   : human_readable_end
+                        "event"      : data["alerts"][0].get("event", "Unknown"),
+                        "description": data["alerts"][0].get("description", "No description"),
+                        "start time" : human_readable_start,
+                        "end time"   : human_readable_end
                     }
                 ]
             else:
-                alerts_data = []  # Αν δεν υπάρχουν alerts, στέλνει κενή λίστα
-
-
-    
+                alerts_data = []
 
             return jsonify({
-                "location"   :loc,
-                "latitude"   :lat,
-                "longtitude" :lon,
-                "temperature":data["current"]["temp"],
-                "feels_like" :data["current"]["feels_like"],
-                "humidity"   :data["current"]["humidity"],
-                "wind speed" :data["current"]["wind_speed"],
-                "weather"    :data["current"]["weather"][0]["description"],
-                "min_temp"   :data["daily"][0]["temp"]["min"],
-                "max_temp"   :data["daily"][0]["temp"]["max"],
-                "alerts"     :alerts_data
+                "location"   : loc,
+                "latitude"   : lat,
+                "longtitude" : lon,
+                "temperature": data.get("current", {}).get("temp", "N/A"),
+                "feels_like" : data.get("current", {}).get("feels_like", "N/A"),
+                "humidity"   : data.get("current", {}).get("humidity", "N/A"),
+                "wind speed" : data.get("current", {}).get("wind_speed", "N/A"),
+                "weather"    : data.get("current", {}).get("weather", [{}])[0].get("description", "N/A"),
+                "min_temp"   : data.get("daily", [{}])[0].get("temp", {}).get("min", "N/A"),
+                "max_temp"   : data.get("daily", [{}])[0].get("temp", {}).get("max", "N/A"),
+                "alerts"     : alerts_data
+            })
 
-        })
         except Exception as e:
             logging.error(f"Σφάλμα στο /weather endpoint: {str(e)}")
             return jsonify({"error": "Internal Server Error"}), 500
+
 
 
 @app.route("/metrics", methods = ["GET"])
