@@ -3,7 +3,9 @@ from flask_cors import CORS
 import requests
 from datetime import datetime,timezone
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
-import logging
+from dotenv import load_dotenv
+import os
+
 
 
 app = Flask(__name__)
@@ -13,7 +15,6 @@ REQUEST_DURATION = Histogram('weather_api_response_duration_seconds', 'Χρον�
 
 CORS(app)   #access σε όλους τους clients
 
-logging.basicConfig(level=logging.DEBUG)
 
 @app.route("/", methods=["GET"])
 def home():
@@ -47,44 +48,36 @@ def weather():
             if ":" in user_ip:  # Αν υπάρχει PORT 
                 user_ip = user_ip.split(":")[0]
 
-            logging.debug(f"User IP: {user_ip}")
 
             if user_ip == "127.0.0.1" or user_ip == "192.168.1.114":
                 user_ip = "8.8.8.8"  # Google DNS , για δοκιμές στον localhost
 
             url = f'http://ip-api.com/json/{user_ip}'  
-            logging.debug(f"IP-API URL: {url}")
 
             try:
                 response = requests.get(url, timeout=10)
                 response.raise_for_status()
                 data = response.json()
-                logging.debug(f"IP-API Response: {data}")
             except requests.exceptions.RequestException as e:
-                logging.error(f"Σφάλμα στο IP-API Request: {str(e)}")
                 return jsonify({"error": "Failed to retrieve location data"}), 500
 
             if response.status_code == 200 :
                 loc = (data.get("city", "Unknown"), data.get("country", "Unknown"))
                 lat = data.get("lat", 0)
                 lon = data.get("lon", 0)
-                logging.debug(f"Location: {loc}, Lat: {lat}, Lon: {lon}")
             else:
-                logging.error("Σφάλμα στη λήψη δεδομένων τοποθεσίας")
                 return jsonify({"error" : "Failed to retrieve location data"})
 
             # Αίτημα στο OpenWeatherAPI
-            api_key = "d3867d125924f8f826fa707057778f18"
+            load_dotenv()
+            api_key = os.getenv("OPENWEATHER_API_KEY")
             url = f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&units=metric&exclude=minutely,hourly&appid={api_key}'
-            logging.debug(f"OpenWeather URL: {url}")
 
             try:
                 response = requests.get(url, timeout=10)
                 response.raise_for_status()
                 data = response.json()
-                logging.debug(f"OpenWeather Response: {data}")
             except requests.exceptions.RequestException as e:
-                logging.error(f"Σφάλμα στο OpenWeather Request: {str(e)}")
                 return jsonify({"error": "Failed to retrieve weather data"}), 500
 
             # Μετατροπή Unix time σε κανονική ώρα
@@ -121,7 +114,6 @@ def weather():
             })
 
         except Exception as e:
-            logging.error(f"Σφάλμα στο /weather endpoint: {str(e)}")
             return jsonify({"error": "Internal Server Error"}), 500
 
 
