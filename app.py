@@ -16,7 +16,7 @@ REQUEST_DURATION = Histogram('weather_api_response_duration_seconds', 'Χρον�
 TEMPERATURE_GAUGE = Gauge('weather_temperature','Τρέχουσα θερμοκρασία στο /weather')
 USERS_GAUGE = Gauge('active_users','Πόσοι users έχουν χρησιμοποίησει το api')
 WIND_SPEED_KMH_GAUGE = Gauge('wind_speed','Ταχύτητα του ανέμου σε km/h')
-WEATHER_DESC_GAUGE = Gauge('weather_condition','Κατάσταση του καιρού')
+WEATHER_DESC_GAUGE = Gauge('weather_condition', 'Κατάσταση του καιρού', ['condition'])
 
 
 unique_ips = set()
@@ -85,12 +85,15 @@ def weather():
                 response = requests.get(url, timeout=10)
                 response.raise_for_status()
                 data = response.json()
-                TEMPERATURE_GAUGE.set(data.get("current", {}).get("temp", "N/A"))
+                TEMPERATURE_GAUGE.set(data.get("current", {}).get("temp", float('nan')))
                 wind_speed_ms = data.get("current", {}).get("wind_speed", None)
                 if wind_speed_ms:
                     wind_speed_kmh = wind_speed_ms*3.6
                     WIND_SPEED_KMH_GAUGE.set(wind_speed_kmh)
-                WEATHER_DESC_GAUGE.set(data.get("current", {}).get("weather", [{}])[0].get("description", "N/A"))
+                else:
+                    WIND_SPEED_KMH_GAUGE.set(float('nan'))
+                condition = data.get("current", {}).get("weather", [{}])[0].get("description", "unknown")
+                WEATHER_DESC_GAUGE.labels(condition=condition).set(1)
             except requests.exceptions.RequestException as e:
                 return jsonify({"error": "Failed to retrieve weather data"}), 500
 
