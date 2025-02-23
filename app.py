@@ -2,7 +2,7 @@ from flask import Flask,request,jsonify
 from flask_cors import CORS
 import requests
 from datetime import datetime,timezone
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from dotenv import load_dotenv
 import os
 
@@ -10,8 +10,16 @@ import os
 
 app = Flask(__name__)
 
+#Prometheus Custom Metrics
 REQUEST_COUNT = Counter('weather_api_requests_total', 'Συνολικός αριθμός αιτημάτων στο /weather')
 REQUEST_DURATION = Histogram('weather_api_response_duration_seconds', 'Χρονική διάρκεια απόκρισης αιτημάτων στο /weather')
+TEMPERATURE_GAUGE = Gauge('weather_temperature','Τρέχουσα θερμοκρασία στο /weather')
+USERS_GAUGE = Gauge('active_users','Πόσοι users έχουν χρησιμοποίησει το api')
+WIND_SPEED_KMH_GAUGE = Gauge('wind_speed','Ταχύτητα του ανέμου σε km/h')
+WEATHER_DESC_GAUGE = Gauge('weather_condition','Κατάσταση του καιρού')
+
+
+unique_ips = set()
 
 CORS(app)   #access σε όλους τους clients
 
@@ -48,9 +56,9 @@ def weather():
             if ":" in user_ip:  # Αν υπάρχει PORT 
                 user_ip = user_ip.split(":")[0]
 
+            unique_ips.add(user_ip)
 
-            if user_ip == "127.0.0.1" or user_ip == "192.168.1.114":
-                user_ip = "8.8.8.8"  # Google DNS , για δοκιμές στον localhost
+            USERS_GAUGE.set(len(unique_ips))
 
             url = f'http://ip-api.com/json/{user_ip}'  
 
@@ -77,6 +85,12 @@ def weather():
                 response = requests.get(url, timeout=10)
                 response.raise_for_status()
                 data = response.json()
+                TEMPERATURE_GAUGE.set(data.get("current", {}).get("temp", "N/A"))
+                wind_speed_ms = data.get("current", {}).get("wind_speed", None)
+                if wind_speed_ms:
+                    wind_speed_kmh = wind_speed_ms*3.6
+                    WIND_SPEED_KMH_GAUGE.set(wind_speed_kmh)
+                WEATHER_DESC_GAUGE.set(data.get("current", {}).get("weather", [{}])[0].get("description", "N/A"))
             except requests.exceptions.RequestException as e:
                 return jsonify({"error": "Failed to retrieve weather data"}), 500
 
@@ -106,7 +120,7 @@ def weather():
                 "temperature": data.get("current", {}).get("temp", "N/A"),
                 "feels_like" : data.get("current", {}).get("feels_like", "N/A"),
                 "humidity"   : data.get("current", {}).get("humidity", "N/A"),
-                "wind speed" : data.get("current", {}).get("wind_speed", "N/A"),
+                "wind speed" : wind_speed_kmh,
                 "weather"    : data.get("current", {}).get("weather", [{}])[0].get("description", "N/A"),
                 "min_temp"   : data.get("daily", [{}])[0].get("temp", {}).get("min", "N/A"),
                 "max_temp"   : data.get("daily", [{}])[0].get("temp", {}).get("max", "N/A"),
