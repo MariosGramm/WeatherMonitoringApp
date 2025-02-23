@@ -123,7 +123,7 @@ def weather():
                 "temperature": data.get("current", {}).get("temp", "N/A"),
                 "feels_like" : data.get("current", {}).get("feels_like", "N/A"),
                 "humidity"   : data.get("current", {}).get("humidity", "N/A"),
-                "wind speed" : wind_speed_kmh,
+                "wind speed" : f"{wind_speed_kmh} km/h",
                 "weather"    : data.get("current", {}).get("weather", [{}])[0].get("description", "N/A"),
                 "min_temp"   : data.get("daily", [{}])[0].get("temp", {}).get("min", "N/A"),
                 "max_temp"   : data.get("daily", [{}])[0].get("temp", {}).get("max", "N/A"),
