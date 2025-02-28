@@ -1,8 +1,9 @@
 groups:
   - name: WeatherAlerts
     rules:
+      #Value-Driven Alerts
       - alert: HighResponseTime
-        expr: http_server_requests_seconds_sum / http_server_requests_seconds_count > 2
+        expr: weather_api_response_duration_seconds > 2
         for: 1m
         labels:
           severity: warning
@@ -10,11 +11,67 @@ groups:
           summary: "Υψηλός χρόνος απόκρισης API"
           description: "Ο χρόνος απόκρισης του Flask API ξεπερνά τα 2 δευτερόλεπτα για πάνω από 1 λεπτό."
 
+      - alert: UsersCount
+        expr: active_users > 5
+        labels:
+          severity : warning
+        annotations:
+          summary : "Επισκεψιμότητα API"
+          description : "Οι χρήστες του API έφτασαν πάνω από τους πέντε"
+
+      #Weather Alerts
       - alert: LowTemperature
         expr: weather_temperature < 0
-        for: 2m
+        for: 10m
         labels:
           severity: critical
         annotations:
           summary: "Πολύ χαμηλή θερμοκρασία"
           description: "Η θερμοκρασία είναι κάτω από 0°C για πάνω από 2 λεπτά."
+
+      - alert: HeatwaveAlert
+        expr: heatwave_alert > 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ειδοποίηση για Καύσωνα"
+          description: "Η θερμοκρασία είναι πάνω από 35°C για πάνω από 10 λεπτά."
+
+      - alert: WindSpeed
+        expr: wind_speed > 60
+        for: 2m
+        labels:
+          severity: crtical
+        annotations :
+          summary: "Ταχύτητα αέρα"
+          description: "Επικίνδυνη ταχύτητα αέρα για πάνω από 2 λεπτά"
+        
+      - alert: ThunderstormAlert
+        expr: weather_condition{condition = "Thunderstorm"} > 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ειδοποίηση για καταιγίδα"
+          description: "Καταιγίδα για πάνω από 10 λεπτά."
+
+      - alert: ShowerRain
+        expr: weather_condition{condition = "Shower Rain"} > 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ειδοποίηση για καταρακτώδη βροχή"
+          description: "Καταρακτώδη βροχή για πάνω από 10 λεπτά."
+
+      - alert: Snow
+        expr: weather_condition{condition = "Snow"} > 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ειδοποίηση για χιόνι"
+          description: "Χιόνι για πάνω από 10 λεπτά."
+      
+      
