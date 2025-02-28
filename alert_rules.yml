@@ -16,8 +16,16 @@ groups:
         labels:
           severity : warning
         annotations:
-          summary : "Επισκεψιμότητα API"
+          summary : "Χρήστες API"
           description : "Οι χρήστες του API έφτασαν πάνω από τους πέντε"
+
+      - alert: TotalApiRequests
+        expr: weather_api_requests_total > 10
+        labels:
+          severity: warning
+        annotations:
+          summary: "Επισκεψιμότητα API"
+          description: "Τα συνολικά αιτήματα στο API ξεπέρασαν τα δέκα"
 
       #Weather Alerts
       - alert: LowTemperature
