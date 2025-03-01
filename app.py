@@ -11,7 +11,7 @@ import os
 app = Flask(__name__)
 
 #Prometheus Custom Metrics
-REQUEST_COUNT = Counter('weather_api_requests_total', 'Συνολικός αριθμός αιτημάτων στο /weather')
+REQUEST_COUNT = Counter('weather_api_requests_total', 'Συνολικός αριθμός αιτημάτων στο api')
 REQUEST_DURATION = Histogram('weather_api_response_duration_seconds', 'Χρονική διάρκεια απόκρισης αιτημάτων στο /weather')
 TEMPERATURE_GAUGE = Gauge('weather_temperature','Τρέχουσα θερμοκρασία στο /weather')
 USERS_GAUGE = Gauge('active_users','Πόσοι users έχουν χρησιμοποίησει το api')
