@@ -17,6 +17,6 @@ receivers:
         title: '{{ .CommonLabels.alertname }}'
         text: |
            *Alert:* {{ .CommonLabels.alertname }}
-           *Severity:* {{ .Labels.severity }}
-           *Summary:* {{ .Annotations.summary }}
-           *Description:* {{ .Annotations.description }}
+           *Severity:* {{ .CommonLabels.severity }}
+           *Summary:* {{ .CommonAnnotations.summary }}
+           *Description:* {{ .CommonAnnotations.description }}
