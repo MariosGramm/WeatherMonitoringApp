@@ -23,6 +23,8 @@ services:   #κάθε εργασία είναι χωρισμένη σε services
       - "9093:9093"
     networks:
       - monitoring
+    env_file:
+      - file.env
 
   grafana:
     image: grafana/grafana:latest
