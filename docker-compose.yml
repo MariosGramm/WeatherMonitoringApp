@@ -15,16 +15,16 @@ services:   #κάθε εργασία είναι χωρισμένη σε services
       - monitoring
 
   alertmanager:
-    image: prom/alertmanager:v0.26.0
+    image: prom/alertmanager:latest
     container_name: alertmanager
     volumes:
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml #σύνδεση τοπικού αρχείου alertmanager.yml
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    env_file:
+      - .env
     ports:
       - "9093:9093"
     networks:
       - monitoring
-    env_file:
-      - file.env
 
   grafana:
     image: grafana/grafana:latest
