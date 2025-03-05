@@ -11,8 +11,8 @@ route:
 receivers:
   - name: "telegram"
     telegram_configs:
-      - bot_token: "7917622626:AAHaHj6Tkq3C_6F7pcK0xj0B_A3rFMbGktg"
-        chat_id: -4728258102
+      - bot_token: <Telegram Bot Token>
+        chat_id: <Group_chat_id>
         send_resolved: true
         message: |
           Alert: {{ .CommonLabels.alertname }}
