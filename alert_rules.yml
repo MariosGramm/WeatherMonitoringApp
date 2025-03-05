@@ -81,5 +81,15 @@ groups:
         annotations:
           summary: "Ειδοποίηση για χιόνι"
           description: "Χιόνι για πάνω από 10 λεπτά."
+        
+        #Test Alerts
+      - alert: TestAlert
+        expr: vector(1)
+        for: 10s
+        labels:
+          severity: test
+        annotations:
+          summary: "Test Alert"
+          description: "Alert for testing"
       
       
