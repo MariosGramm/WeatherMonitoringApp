@@ -61,11 +61,8 @@ All collected metrics are stored and visualized in Grafana dashboards, making it
 
 Infrastructure and Technologies Used:
 
-The Flask API runs on Azure App Service and is publicly accessible.
-
-Prometheus, Alertmanager, and Grafana run locally in Docker containers.
-
-Weather data is collected in real-time from the API, stored in Prometheus, and alerts are sent via Alertmanager to Telegram.
-
+-The Flask API runs on Azure App Service and is publicly accessible.
+-Prometheus, Alertmanager, and Grafana run locally in Docker containers.
+-Weather data is collected in real-time from the API, stored in Prometheus, and alerts are sent via Alertmanager to Telegram.
 
 This system is ideal for real-time weather monitoring, with built-in alerting capabilities whenever critical changes in the collected metrics are detected.
