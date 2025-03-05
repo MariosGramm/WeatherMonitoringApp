@@ -1,5 +1,5 @@
 # WeatherMonitoringApp
-A cloud-based weather monitoring API built with Flask, deployed on Azure App Service, and integrated with Prometheus for metrics,Grafana for dashboards and Telegram for real-time alerts.
+A cloud-based weather monitoring API built with Flask, deployed on Azure App Service, and integrated with Prometheus for metrics, Grafana for dashboards and Telegram for real-time alerts.
 
 
 Αυτό το project είναι ένα σύστημα παρακολούθησης και ειδοποιήσεων για δεδομένα καιρού, το οποίο αναπτύχθηκε με τη χρήση Flask, Prometheus, Alertmanager, Grafana και Docker.
