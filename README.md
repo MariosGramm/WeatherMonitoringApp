@@ -5,7 +5,7 @@ A cloud-based weather monitoring API built with Flask, deployed on Azure App Ser
 Αυτό το project είναι ένα σύστημα παρακολούθησης και ειδοποιήσεων για δεδομένα καιρού, το οποίο αναπτύχθηκε με τη χρήση Flask, Prometheus, Alertmanager, Grafana και Docker.
 
  Flask API στο Azure App Service:
-Η κύρια εφαρμογή είναι ένα Flask API, το οποίο τρέχει online στο Azure App Service και παραμένει διαθέσιμο για πάντα, καθώς δεν υπάρχει χρέωση για τη χρήση του. Το API παρέχει τις εξής λειτουργίες:
+Η κύρια εφαρμογή είναι ένα Flask API, το οποίο τρέχει online στο Azure App Service(flaskapp-weather-flask-app-nv4xfwe7z5jli.azurewebsites.net) και παραμένει διαθέσιμο για πάντα, καθώς δεν υπάρχει χρέωση για τη χρήση του. Το API παρέχει τις εξής λειτουργίες:
 
 /weather: Endpoint που επιστρέφει δεδομένα καιρού, όπως θερμοκρασία, υγρασία, ταχύτητα ανέμου και καιρικές συνθήκες.
 
@@ -39,7 +39,7 @@ This project is a weather monitoring and alerting system developed using Flask, 
 
 Flask API on Azure App Service:
 
-The core application is a Flask API, which runs online on Azure App Service and will remain available indefinitely, as there are no associated costs. The API provides the following functionalities:
+The core application is a Flask API, which runs online on Azure App Service(flaskapp-weather-flask-app-nv4xfwe7z5jli.azurewebsites.net) and will remain available indefinitely, as there are no associated costs. The API provides the following functionalities:
 
 /weather: An endpoint that returns weather data, including temperature, humidity, wind speed, and weather conditions.
 
