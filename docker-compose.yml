@@ -44,4 +44,4 @@ volumes:
 
 networks:
   monitoring:
-    driver: bridge    #σύνδεση των containers μεταξύ τους
+    driver: bridge    
