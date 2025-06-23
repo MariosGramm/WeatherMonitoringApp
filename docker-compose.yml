@@ -37,7 +37,7 @@ services:   #κάθε εργασία είναι χωρισμένη σε services
     networks:
       - monitoring
     volumes:
-      - grafana-data:/var/lib/grafana   #grafana data :docker volume που αποθηκεύονται τα dashboards και οι ρυθμίσεις του Grafana (χρήση του volume)
+      - grafana-data:/var/lib/grafana   
 
 volumes:
   grafana-data:   
